@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isValidHash } from '@/lib/quiz/hash';
+
+const VALID_PRODUCTS = ['poster', 'phone-case', 'stickers', 'canvas', 'tote'];
 
 export async function POST(req: NextRequest) {
-  const { hash, product } = await req.json();
+  let hash: string;
+  let product: string;
+  try {
+    const body = await req.json();
+    hash = body?.hash;
+    product = body?.product;
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
 
-  if (!hash || !product) {
+  if (!hash || !product || !isValidHash(hash) || !VALID_PRODUCTS.includes(product)) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 

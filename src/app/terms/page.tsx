@@ -23,7 +23,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-white text-lg font-semibold mb-2">Acceptance of Terms</h2>
             <p>
-              By accessing and using YourAuraScore.com, you accept and agree to be bound by
+              By accessing and using this website, you accept and agree to be bound by
               these Terms of Service. If you do not agree, please do not use the site.
             </p>
           </section>
@@ -75,7 +75,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-white text-lg font-semibold mb-2">Contact</h2>
             <p>
-              For questions about these terms, contact us at legal@youraura.score.
+              For questions about these terms, contact us at info@alstonanalystics.com.
             </p>
           </section>
         </div>

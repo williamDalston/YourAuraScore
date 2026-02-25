@@ -20,6 +20,7 @@ export default function AuraCanvas({ hash, className = '' }: AuraCanvasProps) {
         ref={canvasRef}
         className="w-full h-full rounded-2xl object-contain"
         style={{ maxHeight: '70vh' }}
+        aria-label="Your unique aura visualization"
       />
       {!isRevealed && (
         <div className="absolute inset-0 flex items-center justify-center">

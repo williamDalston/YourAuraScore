@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isValidHash } from '@/lib/quiz/hash';
 
 const PRICES: Record<string, { amount: number; name: string }> = {
   wallpaper: { amount: 199, name: 'HD Aura Wallpaper (4K)' },
@@ -7,9 +8,17 @@ const PRICES: Record<string, { amount: number; name: string }> = {
 };
 
 export async function POST(req: NextRequest) {
-  const { hash, product } = await req.json();
+  let hash: string;
+  let product: string;
+  try {
+    const body = await req.json();
+    hash = body?.hash;
+    product = body?.product;
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
 
-  if (!hash || !product || !PRICES[product]) {
+  if (!hash || !product || !PRICES[product] || !isValidHash(hash)) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
@@ -55,6 +64,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Stripe error:', error);
-    return NextResponse.json({ error: 'Payment setup failed' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Payment setup failed. Please try again or contact support.' },
+      { status: 500 }
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { decodeAnswers } from '@/lib/quiz/hash';
+import { decodeAnswers, isValidHash } from '@/lib/quiz/hash';
 import { calculateDimensions } from '@/lib/quiz/scoring';
 import { generatePalette, hslToString } from '@/lib/aura/palette';
 import { matchArchetype } from '@/lib/archetypes/matcher';
@@ -10,10 +10,45 @@ interface Props {
   params: Promise<{ hash: string }>;
 }
 
+function fallbackOgImage() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)',
+        }}
+      >
+        <div style={{ fontSize: 48, fontWeight: 'bold', color: 'white', marginBottom: 16 }}>
+          YourAuraScore
+        </div>
+        <div style={{ fontSize: 24, color: 'rgba(255,255,255,0.7)' }}>
+          Take the quiz → youraura.score
+        </div>
+      </div>
+    ),
+    { width: 1200, height: 630 }
+  );
+}
+
 export async function GET(_req: Request, { params }: Props) {
   const { hash } = await params;
 
-  const answers = decodeAnswers(hash);
+  if (!isValidHash(hash)) {
+    return fallbackOgImage();
+  }
+
+  let answers: Record<number, number>;
+  try {
+    answers = decodeAnswers(hash);
+  } catch {
+    return fallbackOgImage();
+  }
   const dimensions = calculateDimensions(answers);
   const palette = generatePalette(dimensions);
   const archetype = matchArchetype(dimensions, answers[12] ?? 0);

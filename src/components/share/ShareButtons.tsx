@@ -10,23 +10,33 @@ interface ShareButtonsProps {
 
 export default function ShareButtons({ hash, archetypeName }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
   const url = typeof window !== 'undefined'
     ? `${window.location.origin}/results/${hash}`
     : `/results/${hash}`;
   const text = `I just discovered my aura! I'm "${archetypeName}" ✨ Find yours:`;
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(`${text} ${url}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopyError(false);
+    try {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 3000);
+    }
   };
 
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({ title: 'My Aura Score', text, url });
-      } catch {
-        // User cancelled
+      } catch (err) {
+        // User cancelled or share failed — fallback to copy
+        if ((err as Error)?.name !== 'AbortError') {
+          handleCopy();
+        }
       }
     } else {
       handleCopy();
@@ -64,10 +74,14 @@ export default function ShareButtons({ hash, archetypeName }: ShareButtonsProps)
       <h3 className="text-white/50 text-xs uppercase tracking-[0.2em] mb-4 text-center">
         Share Your Aura
       </h3>
+      {copyError && (
+        <p className="text-red-400 text-sm text-center mb-3">Could not copy. Please select and copy manually.</p>
+      )}
       <div className="max-w-md mx-auto flex items-center justify-center gap-3">
         {/* Native share (mobile) */}
         <button
           onClick={handleNativeShare}
+          aria-label="Share via device share menu"
           className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white
                      rounded-full px-5 py-2.5 text-sm transition-colors cursor-pointer"
         >
@@ -82,6 +96,7 @@ export default function ShareButtons({ hash, archetypeName }: ShareButtonsProps)
         {/* Copy link */}
         <button
           onClick={handleCopy}
+          aria-label={copied ? 'Link copied to clipboard' : 'Copy link to clipboard'}
           className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white
                      rounded-full px-5 py-2.5 text-sm transition-colors cursor-pointer"
         >
@@ -110,9 +125,9 @@ export default function ShareButtons({ hash, archetypeName }: ShareButtonsProps)
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`Share on ${link.name}`}
             className="flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20
                        text-white rounded-full transition-colors"
-            title={link.name}
           >
             {link.icon}
           </a>

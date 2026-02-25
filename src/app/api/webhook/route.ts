@@ -24,15 +24,17 @@ export async function POST(req: NextRequest) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const { hash, product } = session.metadata || {};
-
-      // In a real app, you'd generate a download token and store it
-      // For this MVP, the download is handled via the success URL
-      console.log(`Payment completed: ${product} for hash ${hash}`);
+      // Download is handled via Stripe success URL; no server-side fulfillment needed
+      if (process.env.NODE_ENV === 'development') {
+        console.info(`Payment completed: ${product} for hash ${hash}`);
+      }
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Webhook error:', error);
+    }
     return NextResponse.json({ error: 'Webhook failed' }, { status: 400 });
   }
 }

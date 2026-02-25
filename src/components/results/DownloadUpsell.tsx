@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface DownloadUpsellProps {
@@ -7,12 +8,18 @@ interface DownloadUpsellProps {
 }
 
 export default function DownloadUpsell({ hash }: DownloadUpsellProps) {
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const handleDownload = async (type: 'wallpaper' | 'animated' | 'report') => {
     const prices: Record<string, string> = {
       wallpaper: '$1.99',
       animated: '$2.99',
       report: '$4.99',
     };
+
+    setError(null);
+    setLoading(type);
 
     try {
       const res = await fetch('/api/checkout', {
@@ -25,12 +32,18 @@ export default function DownloadUpsell({ hash }: DownloadUpsellProps) {
 
       if (data.url) {
         window.location.href = data.url;
-      } else if (data.demo) {
-        // Dev mode: simulate download
-        alert(`Demo mode: ${type} download for ${prices[type]}. In production, this opens Stripe Checkout.`);
+        return;
       }
+      if (data.demo) {
+        alert(`Demo mode: ${type} download for ${prices[type]}. In production, this opens Stripe Checkout.`);
+        setLoading(null);
+        return;
+      }
+      setError(data.error || 'Something went wrong. Please try again.');
     } catch {
-      console.error('Checkout error');
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(null);
     }
   };
 
@@ -46,11 +59,16 @@ export default function DownloadUpsell({ hash }: DownloadUpsellProps) {
           Keep Your Aura
         </h3>
 
+        {error && (
+          <p className="text-red-400 text-sm text-center mb-3 px-2">{error}</p>
+        )}
+
         <button
           onClick={() => handleDownload('wallpaper')}
+          disabled={!!loading}
           className="w-full flex items-center justify-between bg-gradient-to-r from-violet-600 to-purple-600
-                     hover:from-violet-500 hover:to-purple-500 text-white rounded-xl px-5 py-4
-                     transition-all duration-200 cursor-pointer"
+                     hover:from-violet-500 hover:to-purple-500 disabled:opacity-70 disabled:cursor-not-allowed
+                     text-white rounded-xl px-5 py-4 transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -61,14 +79,19 @@ export default function DownloadUpsell({ hash }: DownloadUpsellProps) {
               <p className="text-white/60 text-xs">Phone + Desktop (4K PNG)</p>
             </div>
           </div>
-          <span className="font-bold">$1.99</span>
+          {loading === 'wallpaper' ? (
+            <span className="animate-pulse">...</span>
+          ) : (
+            <span className="font-bold">$1.99</span>
+          )}
         </button>
 
         <button
           onClick={() => handleDownload('animated')}
+          disabled={!!loading}
           className="w-full flex items-center justify-between bg-white/5 border border-white/10
-                     hover:bg-white/10 text-white rounded-xl px-5 py-4
-                     transition-all duration-200 cursor-pointer"
+                     hover:bg-white/10 disabled:opacity-70 disabled:cursor-not-allowed
+                     text-white rounded-xl px-5 py-4 transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -79,14 +102,19 @@ export default function DownloadUpsell({ hash }: DownloadUpsellProps) {
               <p className="text-white/60 text-xs">Live wallpaper (MP4 loop)</p>
             </div>
           </div>
-          <span className="font-bold">$2.99</span>
+          {loading === 'animated' ? (
+            <span className="animate-pulse">...</span>
+          ) : (
+            <span className="font-bold">$2.99</span>
+          )}
         </button>
 
         <button
           onClick={() => handleDownload('report')}
+          disabled={!!loading}
           className="w-full flex items-center justify-between bg-white/5 border border-white/10
-                     hover:bg-white/10 text-white rounded-xl px-5 py-4
-                     transition-all duration-200 cursor-pointer"
+                     hover:bg-white/10 disabled:opacity-70 disabled:cursor-not-allowed
+                     text-white rounded-xl px-5 py-4 transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -101,7 +129,11 @@ export default function DownloadUpsell({ hash }: DownloadUpsellProps) {
               <p className="text-white/60 text-xs">Deep archetype analysis (PDF)</p>
             </div>
           </div>
-          <span className="font-bold">$4.99</span>
+          {loading === 'report' ? (
+            <span className="animate-pulse">...</span>
+          ) : (
+            <span className="font-bold">$4.99</span>
+          )}
         </button>
       </div>
     </motion.div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { decodeAnswers } from '@/lib/quiz/hash';
+import { decodeAnswers, isValidHash } from '@/lib/quiz/hash';
 import { calculateDimensions } from '@/lib/quiz/scoring';
 import { matchArchetype, calculateRarity } from '@/lib/archetypes/matcher';
 import { generateInsights } from '@/lib/archetypes/insights';
@@ -19,16 +19,43 @@ interface ResultsClientProps {
   hash: string;
 }
 
+function InvalidHashFallback() {
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
+      <h1 className="text-white text-xl font-semibold mb-2">Invalid or expired link</h1>
+      <p className="text-white/60 text-sm text-center mb-6 max-w-sm">
+        This results link may be corrupted or no longer valid. Take the quiz to get your unique aura.
+      </p>
+      <Link
+        href="/quiz"
+        className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500
+                   text-white font-semibold px-8 py-3 rounded-full transition-all"
+      >
+        Take the Quiz
+      </Link>
+    </div>
+  );
+}
+
 export default function ResultsClient({ hash }: ResultsClientProps) {
-  const { archetype, rarity, insights } = useMemo(() => {
-    const answers = decodeAnswers(hash);
-    const dimensions = calculateDimensions(answers);
-    const vibeAnswer = answers[12] ?? 0; // Q12: final vibe check
-    const archetype = matchArchetype(dimensions, vibeAnswer);
-    const rarity = calculateRarity(dimensions);
-    const insights = generateInsights(dimensions);
-    return { archetype, rarity, insights };
+  const result = useMemo(() => {
+    if (!isValidHash(hash)) return null;
+    try {
+      const answers = decodeAnswers(hash);
+      const dimensions = calculateDimensions(answers);
+      const vibeAnswer = answers[12] ?? 0; // Q12: final vibe check
+      const archetype = matchArchetype(dimensions, vibeAnswer);
+      const rarity = calculateRarity(dimensions);
+      const insights = generateInsights(dimensions);
+      return { archetype, rarity, insights };
+    } catch {
+      return null;
+    }
   }, [hash]);
+
+  if (!result) return <InvalidHashFallback />;
+
+  const { archetype, rarity, insights } = result;
 
   return (
     <div className="min-h-screen bg-black">

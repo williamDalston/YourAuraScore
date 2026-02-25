@@ -48,6 +48,7 @@ export default function QuizContainer() {
       {state.currentQuestion > 0 && (
         <button
           onClick={goBack}
+          aria-label="Go to previous question"
           className="absolute top-20 left-6 text-white/50 hover:text-white transition-colors
                      text-sm flex items-center gap-1 z-10 cursor-pointer"
         >

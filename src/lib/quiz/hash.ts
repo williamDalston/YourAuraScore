@@ -6,6 +6,12 @@
 
 const BASE = 5; // Each answer can be 0-4 (5 values)
 const NUM_QUESTIONS = 12;
+const VALID_HASH_REGEX = /^[a-z0-9]{4,12}$/; // Base36, reasonable length
+
+export function isValidHash(hash: string): boolean {
+  if (!hash || typeof hash !== 'string') return false;
+  return VALID_HASH_REGEX.test(hash);
+}
 
 export function encodeAnswers(answers: Record<number, number>): string {
   let value = 0n;
@@ -17,7 +23,14 @@ export function encodeAnswers(answers: Record<number, number>): string {
 }
 
 export function decodeAnswers(hash: string): Record<number, number> {
-  let value = BigInt(`0x0`) + BigInt(parseInt(hash, 36));
+  if (!isValidHash(hash)) {
+    throw new Error(`Invalid quiz hash: ${hash}`);
+  }
+  const parsed = parseInt(hash, 36);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Invalid quiz hash: ${hash}`);
+  }
+  let value = BigInt(parsed);
   const answers: Record<number, number> = {};
   for (let i = 1; i <= NUM_QUESTIONS; i++) {
     answers[i] = Number(value % BigInt(BASE));

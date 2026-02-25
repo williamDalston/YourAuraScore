@@ -79,7 +79,7 @@ export default function PrivacyPage() {
             <h2 className="text-white text-lg font-semibold mb-2">Contact</h2>
             <p>
               If you have questions about this privacy policy, please contact us at
-              privacy@youraura.score.
+              info@alstonanalystics.com.
             </p>
           </section>
         </div>
