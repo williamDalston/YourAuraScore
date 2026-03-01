@@ -24,11 +24,15 @@ export default function MerchSection({ hash }: MerchSectionProps) {
     setLoading(productId);
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
       const res = await fetch('/api/printful', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hash, product: productId }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       const data = await res.json();
 
@@ -39,8 +43,12 @@ export default function MerchSection({ hash }: MerchSectionProps) {
       } else {
         setError(data.error || 'Something went wrong. Please try again.');
       }
-    } catch {
-      setError('Network error. Please check your connection and try again.');
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
     } finally {
       setLoading(null);
     }
@@ -50,7 +58,7 @@ export default function MerchSection({ hash }: MerchSectionProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 4.2, duration: 0.5 }}
+      transition={{ delay: 3.0, duration: 0.5 }}
       className="px-6 py-6"
     >
       <h3 className="text-white/50 text-xs uppercase tracking-[0.2em] mb-4 text-center">
@@ -60,14 +68,16 @@ export default function MerchSection({ hash }: MerchSectionProps) {
         <p className="text-red-400 text-sm text-center mb-3 px-2">{error}</p>
       )}
       <div className="max-w-md mx-auto grid grid-cols-2 gap-3">
-        {PRODUCTS.map((product) => (
+        {PRODUCTS.map((product, i) => (
           <button
             key={product.id}
             onClick={() => handleMerch(product.id)}
             disabled={!!loading}
-            className="flex flex-col items-center gap-2 bg-white/5 border border-white/10
+            aria-label={`Order ${product.name} for ${product.price}`}
+            className={`flex flex-col items-center gap-2 bg-white/5 border border-white/10
                        hover:bg-white/10 disabled:opacity-70 disabled:cursor-not-allowed
-                       rounded-xl p-4 transition-all duration-200 cursor-pointer"
+                       rounded-xl p-4 transition-all duration-200 cursor-pointer min-h-[44px]
+                       ${i === PRODUCTS.length - 1 && PRODUCTS.length % 2 !== 0 ? 'col-span-2' : ''}`}
           >
             <span className="text-2xl" aria-hidden>{product.icon}</span>
             <span className="text-white text-xs font-medium">{product.name}</span>

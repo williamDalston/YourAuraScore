@@ -10,7 +10,7 @@ interface ProgressBarProps {
 
 export default function ProgressBar({ progress, current, total }: ProgressBarProps) {
   return (
-    <div className="w-full px-6 pt-6">
+    <div className="w-full px-6 pt-6 sticky top-0 z-20 bg-black/80 backdrop-blur-sm pb-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-white/50 font-medium tracking-wider uppercase">
           Question {Math.min(current + 1, total)} of {total}

@@ -13,16 +13,16 @@ export default function Home() {
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2
-                     w-[600px] h-[600px] rounded-full opacity-20 blur-[100px] animate-pulse-slow"
+                     w-[80vw] sm:w-[600px] h-[80vw] sm:h-[600px] rounded-full opacity-20 blur-[100px] animate-pulse-slow"
           style={{ background: 'radial-gradient(circle, #7c3aed, #ec4899, transparent)' }}
         />
         <div
-          className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] rounded-full opacity-15
+          className="absolute bottom-1/4 left-1/3 w-[60vw] sm:w-[400px] h-[60vw] sm:h-[400px] rounded-full opacity-15
                      blur-[80px] animate-float"
           style={{ background: 'radial-gradient(circle, #3b82f6, #06b6d4, transparent)' }}
         />
         <div
-          className="absolute top-1/3 right-1/4 w-[350px] h-[350px] rounded-full opacity-10
+          className="absolute top-1/3 right-1/4 w-[50vw] sm:w-[350px] h-[50vw] sm:h-[350px] rounded-full opacity-10
                      blur-[90px] animate-float-delayed"
           style={{ background: 'radial-gradient(circle, #f59e0b, #ef4444, transparent)' }}
         />
@@ -33,12 +33,20 @@ export default function Home() {
         <span className="text-white font-bold text-lg tracking-tight">
           YourAura<span className="text-purple-400">Score</span>
         </span>
-        <Link
-          href="/about"
-          className="text-white/50 hover:text-white text-sm transition-colors"
-        >
-          About
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link
+            href="/archetypes"
+            className="text-white/50 hover:text-white text-sm transition-colors"
+          >
+            Archetypes
+          </Link>
+          <Link
+            href="/about"
+            className="text-white/50 hover:text-white text-sm transition-colors"
+          >
+            About
+          </Link>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -64,7 +72,7 @@ export default function Home() {
             href="/quiz"
             className="inline-flex items-center gap-3 bg-gradient-to-r from-violet-600 to-purple-600
                        hover:from-violet-500 hover:to-purple-500 text-white font-semibold
-                       text-lg px-10 py-4 rounded-full transition-all duration-200
+                       text-base sm:text-lg px-8 sm:px-10 py-3.5 sm:py-4 rounded-full transition-all duration-200
                        shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40
                        hover:scale-105 active:scale-95"
           >
@@ -74,7 +82,7 @@ export default function Home() {
             </svg>
           </Link>
 
-          <p className="text-white/30 text-sm mt-6">
+          <p className="text-white/40 text-sm mt-6">
             Free &bull; No signup required &bull; 60 seconds
           </p>
         </div>
@@ -108,13 +116,13 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 px-6 py-8">
+      <footer className="relative z-10 border-t border-white/10 px-6 py-8">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-white/30 text-sm">&copy; 2026 YourAuraScore</span>
+          <span className="text-white/40 text-sm">&copy; 2026 YourAuraScore</span>
           <div className="flex gap-6">
-            <Link href="/privacy" className="text-white/30 hover:text-white/60 text-sm transition-colors">Privacy</Link>
-            <Link href="/terms" className="text-white/30 hover:text-white/60 text-sm transition-colors">Terms</Link>
-            <Link href="/about" className="text-white/30 hover:text-white/60 text-sm transition-colors">About</Link>
+            <Link href="/privacy" className="text-white/40 hover:text-white/70 text-sm transition-colors">Privacy</Link>
+            <Link href="/terms" className="text-white/40 hover:text-white/70 text-sm transition-colors">Terms</Link>
+            <Link href="/about" className="text-white/40 hover:text-white/70 text-sm transition-colors">About</Link>
           </div>
         </div>
       </footer>

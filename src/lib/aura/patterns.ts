@@ -141,7 +141,7 @@ function renderChaotic(
   height: number,
   time: number
 ) {
-  // Splatter points
+  // Splatter points (deterministic — uses sin-based pseudorandom)
   const seed = Math.sin(time * 0.0001) * 10000;
   for (let i = 0; i < 50; i++) {
     const x = ((Math.sin(i * 127.1 + seed) + 1) / 2) * width;
@@ -152,16 +152,20 @@ function renderChaotic(
     ctx.stroke();
   }
 
-  // Jagged lines
+  // Jagged lines (deterministic — uses sin-based pseudorandom instead of Math.random)
   for (let i = 0; i < 5; i++) {
     ctx.beginPath();
     let x = 0;
-    let y = height * Math.random();
+    let y = height * ((Math.sin(i * 73.7 + seed) + 1) / 2);
     ctx.moveTo(x, y);
+    let step = 0;
     while (x < width) {
-      x += 10 + Math.random() * 30;
-      y += (Math.random() - 0.5) * 60;
+      const pseudoRand1 = (Math.sin(i * 311.1 + step * 131.3 + seed) + 1) / 2;
+      const pseudoRand2 = Math.sin(i * 197.7 + step * 257.1 + seed);
+      x += 10 + pseudoRand1 * 30;
+      y += pseudoRand2 * 30;
       ctx.lineTo(x, Math.max(0, Math.min(height, y)));
+      step++;
     }
     ctx.stroke();
   }

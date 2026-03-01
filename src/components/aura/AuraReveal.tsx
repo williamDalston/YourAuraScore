@@ -5,9 +5,10 @@ import AuraCanvas from './AuraCanvas';
 
 interface AuraRevealProps {
   hash: string;
+  onCanvasReady?: (saveAura: () => void) => void;
 }
 
-export default function AuraReveal({ hash }: AuraRevealProps) {
+export default function AuraReveal({ hash, onCanvasReady }: AuraRevealProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9, filter: 'blur(20px)' }}
@@ -32,7 +33,7 @@ export default function AuraReveal({ hash }: AuraRevealProps) {
             ease: 'easeInOut',
           }}
         />
-        <AuraCanvas hash={hash} />
+        <AuraCanvas hash={hash} onCanvasReady={onCanvasReady} />
       </div>
     </motion.div>
   );

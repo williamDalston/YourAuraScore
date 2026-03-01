@@ -45,21 +45,23 @@ export default function QuizContainer() {
         total={questions.length}
       />
 
-      {state.currentQuestion > 0 && (
-        <button
-          onClick={goBack}
-          aria-label="Go to previous question"
-          className="absolute top-20 left-6 text-white/50 hover:text-white transition-colors
-                     text-sm flex items-center gap-1 z-10 cursor-pointer"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Back
-        </button>
-      )}
+      <div className="px-6 h-10 flex items-center">
+        {state.currentQuestion > 0 && (
+          <button
+            onClick={goBack}
+            aria-label="Go to previous question"
+            className="text-white/50 hover:text-white transition-colors
+                       text-sm flex items-center gap-1 cursor-pointer min-h-[44px] min-w-[44px]"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Back
+          </button>
+        )}
+      </div>
 
-      <div className="flex-1 flex items-center justify-center py-12">
+      <div className="flex-1 flex items-center justify-center pb-12">
         <AnimatePresence mode="wait">
           <QuestionCard
             key={currentQuestion.id}

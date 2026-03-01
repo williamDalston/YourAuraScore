@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import ResultsClient from './ResultsClient';
 
 interface Props {
@@ -29,5 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ResultsPage({ params }: Props) {
   const { hash } = await params;
-  return <ResultsClient hash={hash} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <ResultsClient hash={hash} />
+    </Suspense>
+  );
 }

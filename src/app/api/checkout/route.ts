@@ -5,6 +5,7 @@ const PRICES: Record<string, { amount: number; name: string }> = {
   wallpaper: { amount: 199, name: 'HD Aura Wallpaper (4K)' },
   animated: { amount: 299, name: 'Animated Aura Live Wallpaper' },
   report: { amount: 499, name: 'Full Personality Report (PDF)' },
+  bundle: { amount: 799, name: 'Complete Aura Pack (Wallpaper + Animated + Report)' },
 };
 
 export async function POST(req: NextRequest) {

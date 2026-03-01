@@ -25,8 +25,13 @@ export default function SliderOption({ options, onSelect }: SliderOptionProps) {
       className="w-full flex flex-col items-center gap-8 px-4"
     >
       <div className="w-full flex justify-between text-xs text-white/50 px-1">
-        {options.map((opt) => (
-          <span key={opt.id} className={opt.id === value ? 'text-white font-semibold' : ''}>
+        {options.map((opt, i) => (
+          <span
+            key={opt.id}
+            className={`${opt.id === value ? 'text-white font-semibold' : ''} ${
+              i !== 0 && i !== options.length - 1 && opt.id !== value ? 'hidden sm:inline' : ''
+            } text-center`}
+          >
             {opt.label}
           </span>
         ))}
@@ -37,6 +42,8 @@ export default function SliderOption({ options, onSelect }: SliderOptionProps) {
         max={options.length - 1}
         value={value}
         onChange={(e) => setValue(Number(e.target.value))}
+        aria-label={`Select from ${options[0]?.label} to ${options[options.length - 1]?.label}`}
+        aria-valuetext={options[value]?.label}
         className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer
                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6
                    [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full
@@ -50,7 +57,7 @@ export default function SliderOption({ options, onSelect }: SliderOptionProps) {
           whileTap={{ scale: 0.95 }}
           onClick={handleConfirm}
           disabled={confirmed}
-          className="px-8 py-3 rounded-full bg-white text-black font-semibold text-sm
+          className="px-8 py-3 min-h-[44px] rounded-full bg-white text-black font-semibold text-sm
                      hover:bg-white/90 transition-colors disabled:opacity-50 cursor-pointer"
         >
           Continue

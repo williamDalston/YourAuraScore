@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | YourAuraScore',
+  description: 'Terms of Service for YourAuraScore — personality quiz, digital product purchases, and merchandise policies.',
 };
 
 export default function TermsPage() {
@@ -14,10 +15,10 @@ export default function TermsPage() {
         </Link>
       </nav>
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
-        <h1 className="text-white text-3xl font-bold mb-8">Terms of Service</h1>
+      <main className="max-w-2xl mx-auto px-5 sm:px-6 py-10 sm:py-12">
+        <h1 className="text-white text-2xl sm:text-3xl font-bold mb-8">Terms of Service</h1>
 
-        <div className="space-y-6 text-white/70 text-sm leading-relaxed">
+        <div className="space-y-6 text-white/70 text-[15px] sm:text-sm leading-relaxed">
           <p>Last updated: February 2026</p>
 
           <section>
@@ -75,11 +76,21 @@ export default function TermsPage() {
           <section>
             <h2 className="text-white text-lg font-semibold mb-2">Contact</h2>
             <p>
-              For questions about these terms, contact us at info@alstonanalystics.com.
+              For questions about these terms, contact us at info@alstonanalytics.com.
             </p>
           </section>
         </div>
       </main>
+
+      <footer className="border-t border-white/10 px-6 py-8">
+        <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <span className="text-white/40 text-sm">&copy; 2026 YourAuraScore</span>
+          <div className="flex gap-6">
+            <Link href="/privacy" className="text-white/40 hover:text-white/70 text-sm transition-colors">Privacy</Link>
+            <Link href="/about" className="text-white/40 hover:text-white/70 text-sm transition-colors">About</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

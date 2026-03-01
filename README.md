@@ -93,7 +93,7 @@ src/
 
 ## Contact
 
-- **Support:** info@alstonanalystics.com
+- **Support:** info@alstonanalytics.com
 
 ## License
 

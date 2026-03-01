@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { decodeAnswers, isValidHash } from '@/lib/quiz/hash';
 import { calculateDimensions } from '@/lib/quiz/scoring';
 import { matchArchetype, calculateRarity } from '@/lib/archetypes/matcher';
@@ -38,6 +39,34 @@ function InvalidHashFallback() {
 }
 
 export default function ResultsClient({ hash }: ResultsClientProps) {
+  const searchParams = useSearchParams();
+  const downloadParam = searchParams.get('download');
+  const [saveAura, setSaveAura] = useState<(() => void) | null>(null);
+  const [downloadTriggered, setDownloadTriggered] = useState(false);
+  const hasAutoDownloaded = useRef(false);
+
+  const handleCanvasReady = useCallback((saveFn: () => void) => {
+    setSaveAura(() => saveFn);
+  }, []);
+
+  // Auto-trigger download after purchase redirect
+  useEffect(() => {
+    if (
+      downloadParam &&
+      saveAura &&
+      !hasAutoDownloaded.current
+    ) {
+      hasAutoDownloaded.current = true;
+      setDownloadTriggered(true);
+      // Small delay to ensure canvas is fully rendered
+      const timer = setTimeout(() => {
+        saveAura();
+        setTimeout(() => setDownloadTriggered(false), 3000);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [downloadParam, saveAura]);
+
   const result = useMemo(() => {
     if (!isValidHash(hash)) return null;
     try {
@@ -57,43 +86,97 @@ export default function ResultsClient({ hash }: ResultsClientProps) {
 
   const { archetype, rarity, insights } = result;
 
+  const productLabels: Record<string, string> = {
+    wallpaper: 'HD Wallpaper',
+    animated: 'Animated Aura',
+    report: 'Personality Report',
+    bundle: 'Complete Aura Pack',
+  };
+
   return (
     <div className="min-h-screen bg-black">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-4">
+        <Link href="/" className="text-white font-bold text-lg tracking-tight">
+          YourAura<span className="text-purple-400">Score</span>
+        </Link>
+        <Link
+          href="/quiz"
+          className="text-white/50 hover:text-white text-sm transition-colors"
+        >
+          Retake Quiz
+        </Link>
+      </nav>
+
+      {/* Purchase success banner */}
+      {downloadParam && (
+        <div className="bg-gradient-to-r from-emerald-600/90 to-teal-600/90 text-white text-center py-3 px-4 text-sm">
+          {downloadTriggered ? (
+            <span>Downloading your {productLabels[downloadParam] ?? 'purchase'}...</span>
+          ) : (
+            <span>Thank you for your purchase! Your {productLabels[downloadParam] ?? 'download'} is ready.</span>
+          )}
+        </div>
+      )}
+
       {/* Aura Visualization */}
       <div className="pt-8 px-4">
-        <AuraReveal hash={hash} />
+        <AuraReveal hash={hash} onCanvasReady={handleCanvasReady} />
       </div>
 
-      {/* Archetype */}
+      {/* Preview Save — low-res to differentiate from paid HD */}
+      {saveAura && (
+        <div className="flex justify-center px-6 pt-4">
+          <button
+            onClick={saveAura}
+            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white
+                       rounded-full px-6 py-2.5 text-sm transition-colors cursor-pointer"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Save Preview
+          </button>
+        </div>
+      )}
+
+      {/* Archetype — builds emotional investment */}
       <ArchetypeCard archetype={archetype} />
 
-      {/* Color Meaning */}
+      {/* Color Meaning — deepens personal connection */}
       <ColorMeaning meaning={archetype.colorMeaning} />
+
+      {/* Download Upsell — placed at emotional peak for max conversion */}
+      <DownloadUpsell hash={hash} />
+
+      {/* Rarity — validates uniqueness, reinforces purchase decision */}
+      <RarityBadge rarity={rarity} />
 
       {/* Personality Insights */}
       <PersonalityInsights insights={insights} />
 
-      {/* Rarity */}
-      <RarityBadge rarity={rarity} />
-
-      {/* Share */}
+      {/* Share — after they've seen everything and considered purchasing */}
       <ShareButtons hash={hash} archetypeName={archetype.name} />
 
-      {/* Download Upsell */}
-      <DownloadUpsell hash={hash} />
-
-      {/* Merch */}
+      {/* Merch — secondary revenue */}
       <MerchSection hash={hash} />
 
-      {/* Retake */}
-      <div className="text-center py-8 pb-16">
+      {/* Footer */}
+      <footer className="text-center py-8 pb-16 space-y-3">
         <Link
           href="/quiz"
-          className="text-white/40 hover:text-white/70 text-sm underline underline-offset-4 transition-colors"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600
+                     hover:from-violet-500 hover:to-purple-500 text-white font-semibold
+                     text-sm px-6 py-3 rounded-full transition-all"
         >
-          Retake the quiz
+          Retake the Quiz
         </Link>
-      </div>
+        <div className="flex justify-center gap-6 pt-2">
+          <Link href="/archetypes" className="text-white/40 hover:text-white/70 text-xs transition-colors">Archetypes</Link>
+          <Link href="/privacy" className="text-white/40 hover:text-white/70 text-xs transition-colors">Privacy</Link>
+          <Link href="/terms" className="text-white/40 hover:text-white/70 text-xs transition-colors">Terms</Link>
+        </div>
+      </footer>
     </div>
   );
 }

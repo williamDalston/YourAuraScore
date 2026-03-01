@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import CookieConsent from "@/components/CookieConsent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,6 +12,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#000000",
+};
 
 export const metadata: Metadata = {
   title: "YourAuraScore — Discover Your Unique Aura",
@@ -29,6 +37,28 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "YourAuraScore",
+  description: "A 60-second visual personality quiz that generates a unique, one-of-a-kind aura visualization using generative art.",
+  url: process.env.NEXT_PUBLIC_BASE_URL || "https://youraura.score",
+  applicationCategory: "Entertainment",
+  operatingSystem: "Any",
+  offers: {
+    "@type": "AggregateOffer",
+    lowPrice: "0",
+    highPrice: "7.99",
+    priceCurrency: "USD",
+    offerCount: "4",
+  },
+  creator: {
+    "@type": "Organization",
+    name: "Alston Analytics",
+    email: "info@alstonanalytics.com",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,6 +66,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
@@ -48,6 +84,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <div id="main-content">{children}</div>
+        <CookieConsent />
       </body>
     </html>
   );

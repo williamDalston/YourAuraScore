@@ -25,9 +25,9 @@ export default function WordOption({ option, index, onSelect }: WordOptionProps)
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={onSelect}
-      className="w-full py-5 px-8 rounded-2xl text-white font-bold text-xl tracking-wide cursor-pointer
+      className="w-full py-4 sm:py-5 px-6 sm:px-8 rounded-2xl text-white font-bold text-lg sm:text-xl tracking-wide cursor-pointer
                  border border-white/10 hover:border-white/30 transition-all duration-200
-                 backdrop-blur-sm"
+                 backdrop-blur-sm min-h-[44px]"
       style={{ background: GRADIENTS[index % GRADIENTS.length] }}
     >
       {option.label}

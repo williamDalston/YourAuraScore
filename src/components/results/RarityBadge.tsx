@@ -19,7 +19,7 @@ export default function RarityBadge({ rarity }: RarityBadgeProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 3.4, duration: 0.5, type: 'spring' }}
+      transition={{ delay: 2.0, duration: 0.5, type: 'spring' }}
       className="flex justify-center px-6 py-4"
     >
       <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20

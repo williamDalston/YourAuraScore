@@ -4,11 +4,12 @@ interface Props {
   params: Promise<{ token: string }>;
 }
 
-const VALID_PRODUCTS = ['wallpaper', 'animated', 'report'];
+const VALID_PRODUCTS = ['wallpaper', 'animated', 'report', 'bundle'];
 const PRODUCT_LABELS: Record<string, string> = {
   wallpaper: 'HD Aura Wallpaper (4K)',
   animated: 'Animated Aura Live Wallpaper',
   report: 'Full Personality Report (PDF)',
+  bundle: 'Complete Aura Pack',
 };
 
 function renderThankYouPage(hash: string, product: string, baseUrl: string) {
@@ -28,15 +29,23 @@ function renderThankYouPage(hash: string, product: string, baseUrl: string) {
           a { display: inline-block; background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; padding: 1rem 2rem; border-radius: 9999px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; }
           a:hover { opacity: 0.9; }
           .note { font-size: 0.85rem; margin-top: 1.5rem; opacity: 0.7; }
+          .spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #a855f7; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; margin-right: 8px; vertical-align: middle; }
+          @keyframes spin { to { transform: rotate(360deg); } }
         </style>
       </head>
       <body>
         <div class="container">
           <h1>Thank You!</h1>
-          <p>Your ${productLabel} purchase was successful. Visit your results page to view and save your unique aura.</p>
-          <a href="${baseUrl}/results/${hash}">View Your Aura →</a>
-          <p class="note">You can right-click the aura on the results page to save the image, or use the share options to download.</p>
+          <p>Your ${productLabel} purchase was successful. Your download will start automatically.</p>
+          <p><span class="spinner"></span>Preparing your aura...</p>
+          <a href="${baseUrl}/results/${hash}?download=${product}">View Your Aura →</a>
+          <p class="note">If the download doesn&apos;t start automatically, click the button above.</p>
         </div>
+        <script>
+          setTimeout(function() {
+            window.location.href = "${baseUrl}/results/${hash}?download=${product}";
+          }, 2000);
+        </script>
       </body>
     </html>
   `;
@@ -135,7 +144,7 @@ export async function GET(req: NextRequest, { params }: Props) {
     });
   } catch {
     return new NextResponse(
-      renderErrorPage('We couldn\'t verify your purchase. Please contact info@alstonanalystics.com if you need assistance.', baseUrl),
+      renderErrorPage('We couldn\'t verify your purchase. Please contact info@alstonanalytics.com if you need assistance.', baseUrl),
       { status: 500, headers: { 'Content-Type': 'text/html' } }
     );
   }
